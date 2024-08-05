@@ -26,7 +26,7 @@ router.get('/find/:token', function(req, res, next) {
     const token = req.params.token; 
 
     // Use select to remove key(s) of result
-    User.findOne({token}).select(['-password', '-email']).then(data=> {
+    User.findOne({token}).select(['-password', '-email', '_id', '__v']).then(data=> {
 
       res.json({result:true,user:data})
 
