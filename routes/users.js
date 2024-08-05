@@ -64,7 +64,6 @@ router.post('/signup', (req, res) => {
         newUser.save().then(newDoc =>{
           res.json({result:true,token:newDoc.token})
         }); 
-        
        
       }else {
         res.json({result:false, error:'Nom d\'utilisateur ou addresse e-mail déjà utilisé', notification:true})
@@ -74,8 +73,7 @@ router.post('/signup', (req, res) => {
 
 }); 
 
-
-/* Route Sign in (connextion) */
+/* Route Sign in (connexion) */
 router.post('/signin', (req, res)=> {
 
   if (!checkBody(req.body, ['username', 'password'])) {
@@ -95,9 +93,10 @@ router.post('/signin', (req, res)=> {
     }
   })
 
+});
 
+/* Route to update prefrences */
+/* Use token */
 
-
-}); 
 
 module.exports = router;

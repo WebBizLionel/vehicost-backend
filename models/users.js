@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'); 
 
 //Sub document
-/** Preference **/
+/** Preferences **/
 const preferencesSchema = mongoose.Schema({
     language:{type:Boolean, default:null}, 
     currency:{type:String, default:"EUR"}, 
