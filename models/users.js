@@ -3,19 +3,24 @@ const mongoose = require('mongoose');
 //Sub document
 /** Preference **/
 const preferencesSchema = mongoose.Schema({
-    language:String, 
-    currency:String, 
-    notifications:Boolean, 
+    language:{type:Boolean, default:null}, 
+    currency:{type:String, default:"EUR"}, 
+    notifications:{type:Boolean, default:true}, 
     promotion:Boolean
 }); 
 
 /** Social Login  **/
 /** @TODO refector **/
 const snloginSchema = mongoose.Schema({
-    google_id: String, 
-    facebook_id:String, 
-    apple_id:String, 
+    google_id: {type:String,default:null}, 
+    facebook_id: {type:String,default:null}, 
+    apple_id: {type:String,default:null} 
 })
+
+/** @TODO 
+ * Add favorite gas Station 
+ * foreign key
+ * **/
 
 
 // Main Schema
@@ -35,7 +40,14 @@ const UserSchema = mongoose.Schema({
         required:[true, 'A password is required']
     }, 
     token: String, 
-    phone:String, 
+    phone:{
+        type:String,
+        default:null
+    },
+    country:{
+        type:String, 
+        default:null
+    },
     create_at: {
         type:Date, 
         default:Date.now

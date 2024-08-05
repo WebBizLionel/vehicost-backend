@@ -20,6 +20,11 @@ Cette application mobile permet de gérer les dépenses liées à l'utilisation 
 - Node.js
 - MongoDB
 
+
+## @TODO
+ - **Suggestion de nom d'utilisateur**
+ - **Connection via les réseaux sociaux**
+
 ## Installation
 
 1. **Cloner le dépôt**
@@ -27,4 +32,3 @@ Cette application mobile permet de gérer les dépenses liées à l'utilisation 
    ```bash
    git clone 
    cd votre-repo
-    
