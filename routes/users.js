@@ -11,9 +11,26 @@ const bcrypt = require('bcrypt');
  * create translation file for multilinguisme
 **/
 
-/* GET users listing. */
+
+const filterObject = (obj, callback) => {
+  return Object.fromEntries(Object.entries(obj).
+    filter(([key, val]) => callback(val, key)));
+}
+
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
+});
+
+/* GET User data. */
+router.get('/find/:token', function(req, res, next) {
+    const token = req.params.token; 
+
+    // Use select to remove key(s) of result
+    User.findOne({token}).select(['-password', '-email']).then(data=> {
+
+      res.json({result:true,user:data})
+
+    }); 
 });
 
 /* Route Sign up (inscription)*/
