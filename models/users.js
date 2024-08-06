@@ -1,3 +1,4 @@
+/** Modelisation of user datas **/
 const mongoose = require('mongoose'); 
 
 //Sub document
@@ -6,7 +7,7 @@ const preferencesSchema = mongoose.Schema({
     language:{type:Boolean, default:null}, 
     currency:{type:String, default:"EUR"}, 
     notifications:{type:Boolean, default:true}, 
-    promotion:Boolean
+    promotion:Boolean,
 }); 
 
 /** Social Login  **/
@@ -27,35 +28,31 @@ const snloginSchema = mongoose.Schema({
 const UserSchema = mongoose.Schema({
     username:{ 
         type: String, 
-        required:[true, 'A username is required'],
-        unique:true,
+        required: [true, 'A username is required'],
+        unique: true,
     }, 
     email:{
-        type:String, 
-        required:[true, 'An email adress is required'], 
-        unique:true
+        type: String, 
+        required: [true, 'An email adress is required'], 
+        unique: true
     }, 
     password:{
-        type:String, 
-        required:[true, 'A password is required']
+        type: String, 
+        required: [true, 'A password is required']
     }, 
     token: String, 
     phone:{
-        type:String,
-        default:null
+        type: String,
+        default: null
     },
     country:{
-        type:String, 
-        default:null
+        type: String, 
+        default: null
     },
-    create_at: {
-        type:Date, 
-        default:Date.now
-    }, 
-    accept_rgpd:Boolean, 
-    preferences:preferencesSchema, 
-    social_login:snloginSchema, 
-})
+    accept_rgpd: Boolean, 
+    preferences: preferencesSchema, 
+    social_login: snloginSchema, 
+}, {timestamps:true})
 
 const User = mongoose.model('users', UserSchema); 
 

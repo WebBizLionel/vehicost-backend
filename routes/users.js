@@ -11,17 +11,11 @@ const bcrypt = require('bcrypt');
  * create translation file for multilinguisme
 **/
 
-
-const filterObject = (obj, callback) => {
-  return Object.fromEntries(Object.entries(obj).
-    filter(([key, val]) => callback(val, key)));
-}
-
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-/* GET User data. */
+/* Get user datas. */
 router.get('/find/:token', function(req, res, next) {
     const token = req.params.token; 
 
@@ -79,7 +73,7 @@ router.post('/signup', (req, res) => {
         });
 
         newUser.save().then(newDoc =>{
-          res.json({result:true,token:newDoc.token})
+          res.json({result:true,username: newDoc.username, token:newDoc.token})
         }); 
        
       }else {
