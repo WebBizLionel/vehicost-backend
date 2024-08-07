@@ -17,6 +17,13 @@ const coveragePeriod = mongoose.Schema({
     end_date: Date, 
 }); 
 
+/* Receipt */
+const receiptSchema = mongoose.Schema({
+    name:String,
+    content_type: String, 
+    url:{type:String, required:[true, 'A file is required']}
+})
+
 /**
  * Expenses
  * Allows the addition of expense details here.
@@ -27,7 +34,7 @@ const expensesSchema = mongoose.Schema({
     amount: { type:Number, required:[true, 'A type of expense is required']},
     currency: String, 
     note: String, 
-    receipt_url: String,
+    receipt:[receiptSchema],
     date:{type:Date, default:Date.now},  
     provider: String, 
     place: placeSchema,
@@ -63,6 +70,7 @@ const vehicleSchema = mongoose.Schema({
     }, 
     description: String, 
     image_url: String,
+    image_name: String, 
     user_id:{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'users',

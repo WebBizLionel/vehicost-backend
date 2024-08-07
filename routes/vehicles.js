@@ -5,6 +5,10 @@ const Vehicle = require('../models/vehicles');
 const { getUserId, keyRemoveAdd, removeKeys } = require('../modules/helpers');  
 const { checkBody } = require('../modules/checkBody'); 
 const uniqid = require('uniqid'); 
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const { fileUploadMiddleware } = require('../middleware/fileUploadMiddleware');
+
 
 /** 
  * @TODO
@@ -60,8 +64,10 @@ router.get('/get/:token/:_id?', async (req, res)=>{
 
 }); 
 
+
+
 /* Add a new vehicle */
-router.post('/add', async (req, res) => {
+router.post('/add', fileUploadMiddleware(cloudinary), async (req, res) => {
  
     if(!checkBody(req.body,['token'])) {
         res.status(400).json({result:false, error:'Oups ! Certains champs sont manquants ou vides.', notification:true}); 
@@ -82,31 +88,25 @@ router.post('/add', async (req, res) => {
         // Replace token by user_id
         req.body = keyRemoveAdd(req.body, 'token', {user_id:user})
 
-        //Send Image
-        if(req.files)
-        
+            try{
 
-        try{
+                //Add a new vehicle
+                const newVehicle = new Vehicle({
+                    ...req.body
+                }); 
+    
+                const newDoc = await newVehicle.save();
+    
+                // Remove element of object
+                const newDocObj = removeKeys(newDoc,['user_id']);
+    
+                // Response
+                newDoc && res.json({result:true, vehicle:newDocObj}); 
 
-            //Add a new vehicle
-            const newVehicle = new Vehicle({
-               ...req.body
-            }); 
-
-            const newDoc = await newVehicle.save();
-
-            // Remove element of object
-            const newDocObj = removeKeys(newDoc,['user_id']);
-
-            // Response
-            newDoc && res.json({result:true, vehicle:newDocObj}); 
-
-        }catch(err) {
-
-            console.log(err); 
-            res.status(500).json({result:true, error:'An error has occurred'})
-
-        }
+            } catch(err) {
+                console.log(err); 
+                res.status(500).json({result:true, error:'An error has occurred'})
+            }
 
     } else {
 
@@ -151,13 +151,13 @@ router.delete('/delete', async (req,res)=>{
 }); 
 
 /* Update a vehicle */
-router.put('/update', async (req,res)=>{
+router.put('/update',fileUploadMiddleware(cloudinary),  async (req,res)=>{
 
     // Check minium param
     if(!checkBody(req.body,['token', 'vehicle_id'])) {
         res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
         return; 
-    }
+    } 
 
     // Destructuration  
     const {token, vehicle_id} = req.body; 
@@ -176,6 +176,10 @@ router.put('/update', async (req,res)=>{
                 ...req.body
             }); 
 
+            const json = updateVehicle.modifiedCount> 0 ? {result:true, message:`Vehicle ${vehicle_id} updated`} : { result:false, error: `Vehicle ${vehicle_id} not found`};
+
+            res.json(json);
+
 
         } catch(err) {
             console.log(err); 
@@ -191,7 +195,6 @@ router.put('/update', async (req,res)=>{
 
 
 });
-
 
 /* Add an expenses */
 
