@@ -4,11 +4,8 @@ const User = require('../models/users');
 const Vehicle = require('../models/vehicles');
 const { getUserId, keyRemoveAdd, removeKeys } = require('../modules/helpers');  
 const { checkBody } = require('../modules/checkBody'); 
-const uniqid = require('uniqid'); 
-const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
-const { fileUploadMiddleware } = require('../middleware/fileUploadMiddleware');
 
+const fileUploadMiddleware = require('../middlewares/fileUploadMiddleware');
 
 /** 
  * @TODO
@@ -67,7 +64,7 @@ router.get('/get/:token/:_id?', async (req, res)=>{
 
 
 /* Add a new vehicle */
-router.post('/add', fileUploadMiddleware(cloudinary), async (req, res) => {
+router.post('/add', fileUploadMiddleware(), async (req, res) => {
  
     if(!checkBody(req.body,['token'])) {
         res.status(400).json({result:false, error:'Oups ! Certains champs sont manquants ou vides.', notification:true}); 
@@ -151,7 +148,7 @@ router.delete('/delete', async (req,res)=>{
 }); 
 
 /* Update a vehicle */
-router.put('/update',fileUploadMiddleware(cloudinary),  async (req,res)=>{
+router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
     // Check minium param
     if(!checkBody(req.body,['token', 'vehicle_id'])) {
