@@ -1,7 +1,6 @@
 /** Modelisation of vehicle datas **/
 const mongoose = require('mongoose'); 
 
-
 //Subdocument
 
 /** Place of expense **/
@@ -31,7 +30,7 @@ const receiptSchema = mongoose.Schema({
 const expensesSchema = mongoose.Schema({
     category: {type:String,required:[true, 'A type of expense is required']},
     type: String, 
-    amount: { type:Number, required:[true, 'A type of expense is required']},
+    amount: { type:Number, required:[true, 'A amount of expense is required']},
     currency: String, 
     note: String, 
     receipt:[receiptSchema],

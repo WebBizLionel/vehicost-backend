@@ -19,7 +19,10 @@ router.get('/', function(req, res, next) {
 /* Get vehicles datas of user*/
 router.get('/get/:token/:_id?', async (req, res)=>{
 
-    // Check for minimum params
+     /**
+     * Check miminum param
+     * @TODO change to middleware
+     */
     if(!checkBody(req.params,['token'])) {
         res.status(400).json({result:false, error:'Oups ! Certains champs sont manquants ou vides.', notification:true}); 
         return; 
@@ -55,7 +58,7 @@ router.get('/get/:token/:_id?', async (req, res)=>{
 
     } catch(err) {
         console.log(err); 
-        res.status(500).json({result:true, error:'An error has occurred'})
+        res.status(500).json({result:false, error:'An error has occurred'})
 
     }
 
@@ -117,7 +120,10 @@ router.post('/add', fileUploadMiddleware(), async (req, res) => {
 /* remove a vehicle*/
 router.delete('/delete', async (req,res)=>{
 
-    // Check minium param
+     /**
+     * Check miminum param
+     * @TODO change to middleware
+     */
     if(!checkBody(req.body,['token', 'vehicle_id'])) {
         res.status(400).json({result:false, error:'Oups ! Certains champs sont manquants ou vides.', notification:true}); 
         return; 
@@ -150,14 +156,23 @@ router.delete('/delete', async (req,res)=>{
 /* Update a vehicle */
 router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
-    // Check minium param
+     /**
+     * Check miminum param
+     * @TODO change to middleware
+     */
     if(!checkBody(req.body,['token', 'vehicle_id'])) {
         res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
         return; 
     } 
 
-    // Destructuration  
+    /**
+    * Destructuration params
+    * @params token, vehicle id
+    */
     const {token, vehicle_id} = req.body; 
+
+    // Check if file uploded
+    const {uploaded} = req; 
 
      // Get user id
      const user = await getUserId(User, token); 
@@ -180,7 +195,7 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
         } catch(err) {
             console.log(err); 
-            res.status(500).json({result:true, error:'An error has occurred'})
+            res.status(500).json({result:false, error:'An error has occurred'})
         }
 
      } else {
@@ -190,16 +205,76 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
      }
 
-
 });
 
+/* Get expenses */
 /* Add an expenses */
 
+/** @parameters: key_url, key_name, subdocument, subkey, key_content_type */
+router.put('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name', subdocument:'expenses',key_content_type:'content_type',subkey:'receipt'}), async (req,res)=> {
+   
+    /**
+     * Check miminum param
+     * @TODO change to middleware
+     */
+    if(!checkBody(req.body,['token', 'vehicle_id', 'expenses'])) {
+        res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
+        return; 
+    } 
+
+   /**
+    * Destructuration params
+    * @params token, vehicle id
+    */
+   const {token, vehicle_id} = req.body; 
+
+    // Check if file uploded
+    const {uploaded} = req;  
+
+    const user = await getUserId(User, token); 
+
+   // console.log(req.body.expenses)
+
+
+
+    if(user){ 
+
+        try {
+
+            const addExpense = await  Vehicle.updateOne({ $and:[ {user_id:user}, {_id:vehicle_id}]},{
+        
+                    $push:{
+                        expenses:{
+                        ...req.body.expenses
+                        }
+                    }
+    
+                }, 
+                { runValidators: false } // Validate required field
+            ); 
+        
+            res.json({result:true, expense:addExpense}); 
+
+        }catch(err){
+
+            console.log(err); 
+            res.status(500).json({result:false, error:'An error has occurred'})
+
+        }
+
+    } else {
+
+        // Bad request
+        res.status(400).json({ result: false, error: 'User not found' });
+
+    }
+
+}); 
+
 /* Remove an expenses */
+
 
 /* Update an expenses */
 
 
-
 module.exports = router; 
-  
