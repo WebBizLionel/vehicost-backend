@@ -64,8 +64,6 @@ router.get('/get/:token/:_id?', async (req, res)=>{
 
 }); 
 
-
-
 /* Add a new vehicle */
 router.post('/add', fileUploadMiddleware(), async (req, res) => {
  
@@ -232,11 +230,7 @@ router.post('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name'
     const {uploaded} = req;  
 
     const user = await getUserId(User, token); 
-
-   // console.log(req.body.expenses)
-
-
-
+  
     if(user){ 
 
         try {
@@ -250,7 +244,7 @@ router.post('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name'
                     }
     
                 }, 
-                { runValidators: false } // Validate required field
+                { runValidators: true} // Validate required field
             ); 
         
             res.json({result:true, expense:addExpense}); 
@@ -272,6 +266,54 @@ router.post('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name'
 }); 
 
 /* Remove an expenses */
+router.delete('/expenses/delete',async (req,res) =>{
+    
+     /**
+     * Check miminum param
+     * @TODO change to middleware
+     */
+     if(!checkBody(req.body,['token', 'expenses_id'])) {
+        res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
+        return; 
+    } 
+
+   /**
+    * Destructuration params
+    * @params token, expenses:[{_id}]
+    */
+    const {token, expenses_id} = req.body
+
+    //Get user id 
+    const user = await getUserId(User, token); 
+
+    if(user) {
+        try{
+
+            /**
+            * Make the request in single query
+            */
+            const docDeleted = await Vehicle.findOneAndUpdate(
+                {'expenses._id':expenses_id},
+                {$pull: {expenses:{_id:expenses_id}}}, //Remove the expense
+                {new:true}
+            ).select('-user_id'); 
+            
+            res.json({result:docDeleted});    
+    
+        }catch(err){
+    
+            console.log(err); 
+            res.status(500).json({result:false, error:'An error has occurred'})
+    
+        }
+    } else {
+
+        // Bad request
+        res.status(400).json({ result: false, error: 'User not found' });
+
+    }
+     
+});
 
 
 /* Update an expenses */

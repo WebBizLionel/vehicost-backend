@@ -34,7 +34,6 @@ const expensesSchema = mongoose.Schema({
     currency: String, 
     note: String, 
     receipt:[receiptSchema],
-    date:{type:Date, default:Date.now},  
     provider: String, 
     place: placeSchema,
     fuel_type: String, 
