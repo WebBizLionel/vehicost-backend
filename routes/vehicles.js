@@ -211,7 +211,7 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 /* Add an expenses */
 
 /** @parameters: key_url, key_name, subdocument, subkey, key_content_type */
-router.put('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name', subdocument:'expenses',key_content_type:'content_type',subkey:'receipt'}), async (req,res)=> {
+router.post('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name', subdocument:'expenses',key_content_type:'content_type',subkey:'receipt'}), async (req,res)=> {
    
     /**
      * Check miminum param
