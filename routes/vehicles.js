@@ -191,7 +191,6 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
             res.json(json);
 
-
         } catch(err) {
             console.log(err); 
             res.status(500).json({result:false, error:'An error has occurred'})
@@ -233,7 +232,47 @@ router.get('/expenses/get/:token/:vehicle_id/:_id?',async (req, res) =>{
 
    if(user){
 
-    const query = _id ? {_id: vehicle_id} : {'expenses.id': new Object(_id)}; //Get vehicle or get directly expense
+    try {
+
+        /*const query = _id ? {'expenses.id': new Object(_id)} : {_id:vehicle_id} ; //Get vehicle or get directly expense
+
+        const expenseDoc = await Vehicle.findById(query).select('-user_id'); */
+
+
+        const expenseDoc =  await Vehicle.aggregate([
+            {
+                $match: {
+                    _id: new ObjectId(vehicle_id),
+                }
+            },
+            {
+                $unwind: '$expenses'
+            }, 
+            {
+               $match:{
+                    'expenses._id' : new ObjectId('66b4ec8527acdbceef9bffe2')
+                }
+            },
+            {
+                $group: {
+                    _id : vehicle_id,
+                    total_cost: { $sum: '$expenses.amount'},
+                    expense_number: { $count:{}}, 
+                    expenses:{$push:'$expenses'}
+                }
+            }
+        ])
+    //C'est mieux d'être la boniche de maison ou d'être un sushi crevette ?
+        res.json({result:true, vehicle: expenseDoc}); 
+
+    } catch(err) {
+        
+        console.log(err); 
+        res.status(500).json({result:true, error:'An error has occurred'})
+
+    }
+
+   
 
 
    }else{
