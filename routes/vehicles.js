@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router(); 
 const User = require('../models/users');
 const Vehicle = require('../models/vehicles');
+const { ObjectId } = require('mongoose').Types
 const { getUserId, keyRemoveAdd, removeKeys } = require('../modules/helpers');  
 const { checkBody } = require('../modules/checkBody'); 
 
-const fileUploadMiddleware = require('../middlewares/fileUploadMiddleware');
+const fileUploadMiddleware = require('../middleware/fileUploadMiddleware');
 
 /** 
  * @TODO
@@ -205,9 +206,47 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
 });
 
-/* Get expenses */
-/* Add an expenses */
+/**
+ * EXPENSES
+ */
 
+/*  Get expenses */
+router.get('/expenses/get/:token/:vehicle_id/:_id?',async (req, res) =>{
+
+    /**
+    * Check miminum param
+    * @TODO change to middleware
+    */
+     if(!checkBody(req.params,['token', 'vehicle_id'])) {
+        res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
+        return; 
+    } 
+    
+    /**
+    * Destructuration params
+    * @params token, vehicle id
+    */
+   const {token, vehicle_id, _id} = req.params; 
+
+   //Get user id 
+   const user = await getUserId(User, token);
+
+   if(user){
+
+    const query = _id ? {_id: vehicle_id} : {'expenses.id': new Object(_id)}; //Get vehicle or get directly expense
+
+
+   }else{
+
+     // Bad request
+     res.status(400).json({ result: false, error: 'User not found' });
+
+   }
+
+
+}); 
+
+/* Add an expenses */
 /** @parameters: key_url, key_name, subdocument, subkey, key_content_type */
 router.post('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name', subdocument:'expenses',key_content_type:'content_type',subkey:'receipt'}), async (req,res)=> {
    
@@ -268,11 +307,11 @@ router.post('/expenses/add',fileUploadMiddleware({key_url:'url', key_name:'name'
 /* Remove an expenses */
 router.delete('/expenses/delete',async (req,res) =>{
     
-     /**
-     * Check miminum param
-     * @TODO change to middleware
-     */
-     if(!checkBody(req.body,['token', 'expenses_id'])) {
+    /**
+    * Check miminum param
+    * @TODO change to middleware
+    */
+    if(!checkBody(req.body,['token', 'expenses_id'])) {
         res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
         return; 
     } 
@@ -295,10 +334,14 @@ router.delete('/expenses/delete',async (req,res) =>{
             const docDeleted = await Vehicle.findOneAndUpdate(
                 {'expenses._id':expenses_id},
                 {$pull: {expenses:{_id:expenses_id}}}, //Remove the expense
-                {new:true}
+                {new:true} // Show actual doc Vehicle update
             ).select('-user_id'); 
             
-            res.json({result:docDeleted});    
+            /**
+             * Return 
+             * Vehicle ID && expenses
+             */
+            res.json({result:true,vehicle: {_id: docDeleted._id, expenses:docDeleted.expenses}});    
     
         }catch(err){
     
@@ -315,8 +358,62 @@ router.delete('/expenses/delete',async (req,res) =>{
      
 });
 
-
 /* Update an expenses */
+router.put('/expenses/update', async(req,res) => {
+
+     /**
+     * Check miminum param
+     * @TODO change to middleware
+     */
+     if(!checkBody(req.body,['token', 'expenses_id'])) {
+        res.status(400).json({result:false, error:'Missing or empty field', notification:false}); 
+        return; 
+    } 
+
+    /**
+    * Destructuration params
+    * @params token, expenses:[{_id}]
+    */
+     const {token, expenses_id, expenses} = req.body
+
+     //Get user id 
+     const user = await getUserId(User, token); 
+
+    if(user){
+
+        try {
+            const query = {'expenses._id': new ObjectId(expenses_id)}
+            const arrayFilters = [{"elem._id": new ObjectId(expenses_id)}]
+            const update = {$set: {}}
+            
+
+            //Create $set object
+            for (const key in expenses) {
+                update["$set"][`expenses.$[elem].${key}`] = expenses[key]
+            }
+            
+            // Query, update, option( array filter :determine which array elements to modify )
+            const docUpdate = await Vehicle.findOneAndUpdate(query, update, { arrayFilters, new:true }).select(['-user_id']);
+
+            res.json({result:true, vehicle_id:docUpdate._id, expenses:docUpdate.expenses});
+
+        }catch(err){
+
+            console.log(err); 
+            res.status(500).json({result:false, error:'An error has occurred'})
+
+        }
+     
+
+    }else{
+
+        // Bad request
+        res.status(400).json({ result: false, error: 'User not found' });
+
+    }
+
+
+}); 
 
 
 module.exports = router; 
