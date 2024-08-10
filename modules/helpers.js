@@ -30,4 +30,21 @@ const removeKeys = (obj, keys) => {
   
 };
 
-module.exports = { getUserId, keyRemoveAdd,  removeKeys};
+const removeID = (model, key) => {
+    //Remove all id of shema
+    const modelSchema = model.schema;
+    const removeId = [];
+    for (const key in modelSchema.tree) {
+      const path = modelSchema.paths[key]; 
+      if (!path) continue;  // Skip paths that don't exist 
+      if (path.instance === 'Array' && path.schema) {
+        removeId.push(`-${key}._id`);
+      } else if (path.instance === 'Embedded' || (path.caster && path.caster.instance === 'Embedded')) {
+        removeId.push(`-${key}._id`);
+      } 
+    }
+
+    return removeId; 
+}
+
+module.exports = { getUserId, keyRemoveAdd,  removeKeys, removeID};

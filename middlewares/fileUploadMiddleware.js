@@ -3,14 +3,22 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 
 /**
- * 
- * @param {options} 
- * @returns 
+ * Middleware for file  uploads (images or other files)
+ * @param {object} options - Configurations for file upload and key 
+ * @returns  {function}
  */
 
-const fileUploadMiddleware = (opts={key_url:'image_url', key_name:'image_name', subdocument:null}) => {
+const fileUploadMiddleware = (options = {}) => {
 
     return async (req, res, next) => {
+
+        const defaultOpts = {
+            key_url:'image_url', 
+            key_name:'image_name', 
+            subdocument:null
+        }
+
+        const opts = {...defaultOpts, ...options}
 
         if (req.files) {
             try {
@@ -26,7 +34,6 @@ const fileUploadMiddleware = (opts={key_url:'image_url', key_name:'image_name', 
                     const resultCloudinary = await cloudinary.uploader.upload(filePath);
                     fs.unlinkSync(filePath);
                     const url = resultCloudinary.secure_url;
-
 
                     if(opts.subdocument){
 

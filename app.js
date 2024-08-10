@@ -5,9 +5,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-//Connection to BDD
+// Middleware
+const auth = require('./middlewares/authMiddleware'); 
+
+// Connection to BDD
 require('./database/connection');
 
+// Router
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var vehiclesRouter = require('./routes/vehicles');
@@ -27,6 +31,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/vehicles', vehiclesRouter); 
+app.use('/vehicles',auth, vehiclesRouter); // Use authentification middleware
 
 module.exports = app;

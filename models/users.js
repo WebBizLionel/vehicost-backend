@@ -23,7 +23,6 @@ const snloginSchema = mongoose.Schema({
  * foreign key
  * **/
 
-
 // Main Schema
 const UserSchema = mongoose.Schema({
     username:{ 

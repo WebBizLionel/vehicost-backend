@@ -6,7 +6,7 @@ const { ObjectId } = require('mongoose').Types
 const { getUserId, keyRemoveAdd, removeKeys } = require('../modules/helpers');  
 const { checkBody } = require('../modules/checkBody'); 
 
-const fileUploadMiddleware = require('../middleware/fileUploadMiddleware');
+const fileUploadMiddleware = require('../middlewares/fileUploadMiddleware');
 
 /** 
  * @TODO
@@ -14,7 +14,9 @@ const fileUploadMiddleware = require('../middleware/fileUploadMiddleware');
 **/
 
 router.get('/', function(req, res, next) {
+
     res.send('respond with a resource');
+
 });
 
 /* Get vehicles datas of user*/
