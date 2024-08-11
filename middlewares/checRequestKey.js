@@ -15,13 +15,15 @@ const checkRequestKey = (options = {}) => {
             request : 'body', 
             key:[], 
             msg: 'Oups ! Certains champs sont manquants ou vides.',
+            notification:true,
+            status:400,
         }
 
         const opts = {...defaultOpts, ...options}; 
         
         if(!checkBody(req[opts.request], opts.key)) {
 
-            res.status(400).json({result:false, error:opts.msg, notification:opts.notification});
+            res.status(opts.status).json({result:false, error:opts.msg, notification:opts.notification});
 
         } else {
             next(); 

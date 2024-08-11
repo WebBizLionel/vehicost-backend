@@ -169,6 +169,37 @@ router.put('/update', checkRequestKey(updateParam), async (req, res) => {
 
 });
 
-/* Route to remove a user */
+
+/**
+ * @TODO
+ * use jwt 
+ */
+
+/**
+ * DELETE
+ * @param _id
+ */
+const delParams = {request:'params', key: ['token']};
+router.delete('/delete/:token',checkRequestKey(delParams), async (req, res)=>{
+
+  const token = req.params.token; 
+
+  try{
+
+    const user = await User.findOneAndDelete({ token });
+
+    if(!user) {
+      return res.status(404).json({result:false,  message: 'User not found' });
+    }
+
+    return res.status(200).json({result:true, message: 'User deleted'});
+
+  }catch(err){
+    console.log(err); 
+    res.status(500).json({result:false, error:'An error has occurred'});
+  }
+
+});
+
 
 module.exports = router;
