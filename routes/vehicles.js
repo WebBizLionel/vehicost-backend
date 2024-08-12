@@ -3,8 +3,7 @@ var router = express.Router();
 const User = require('../models/users');
 const Vehicle = require('../models/vehicles');
 const { ObjectId } = require('mongoose').Types
-const { getUserId, keyRemoveAdd, removeKeys } = require('../modules/helpers');  
-const { checkBody } = require('../modules/checkBody'); 
+const {  removeKeys } = require('../modules/helpers'); 
 
 const checkRequestKey = require('../middlewares/checRequestKey');
 const fileUploadMiddleware = require('../middlewares/fileUploadMiddleware');

@@ -54,7 +54,7 @@ const signUpParams = {request:'body', key:['username', 'password', 'email']};
 router.post('/signup',checkRequestKey(signUpParams), async (req, res) => {
 
     // Destructuration of req.body
-    const {username, email, password, phone, accept_rgpd, promotion, country, language } = req.body; 
+    const {username, email, password, phone, accept_rgpd, promotion, country, preferences } = req.body; 
 
     // Check email validation
     if(!validateEmail(email)) {
@@ -85,10 +85,7 @@ router.post('/signup',checkRequestKey(signUpParams), async (req, res) => {
           accept_rgpd, 
           promotion, 
           country,
-          preferences : { 
-            promotion,
-            language
-          }
+          preferences,
         });
   
         const newDoc = await newUser.save(); 
@@ -122,7 +119,7 @@ router.post('/signin',checkRequestKey(signInParams), async (req, res)=> {
     const userDoc = await User.findOne({username});
 
     // Compare password field value from front to password data base 
-    if (userDoc && bcrypt.compareSync(req.body.password, userDoc.password)) {
+    if (userDoc && bcrypt.compareSync(password, userDoc.password)) {
 
       res.json({ result: true, token: userDoc.token });
 

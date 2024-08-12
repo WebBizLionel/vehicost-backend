@@ -3,6 +3,12 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 
 /**
+ * @Todo 
+ * refactro 
+ * return only uri
+ */
+
+/**
  * Middleware for file  uploads (images or other files)
  * @param {object} options - Configurations for file upload and key 
  * @returns  {function}

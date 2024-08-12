@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 //Sub document
 /** Preferences **/
 const preferencesSchema = mongoose.Schema({
-    language:{type:Boolean, default:null}, 
+    language:{type:String, default:null}, 
     currency:{type:String, default:"EUR"}, 
     notifications:{type:Boolean, default:true}, 
-    promotion:Boolean,
+    promotion:{type:Boolean, default:false},
 }); 
 
 /** Social Login  **/
