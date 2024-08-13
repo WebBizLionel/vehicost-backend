@@ -24,7 +24,7 @@ router.get('/get/:_id?', async (req, res)=>{
 
     /**
      * Destructuration params
-     * @params token, vehicle _id
+     * @params vehicle _id
      */
     const {_id} = req.params; 
 
@@ -56,6 +56,13 @@ router.post('/add', fileUploadMiddleware(), async (req, res) => {
     // Get user id
     const user = req.user; 
     
+    //Get file
+    if(req.uploaded) {
+        
+        const { name, url }  = req.fileobject
+        req.body = { ... req.body, image_url: url, image_name: name}
+    }
+
     // Add user directly in req.body
     req.body = {...req.body, user_id:user}
 
@@ -127,8 +134,13 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
     */
     const {vehicle_id} = req.body; 
 
-    // Check if file uploded
-    const {uploaded} = req; 
+     //Get file
+     if(req.uploaded) {
+        
+        const { name, url }  = req.fileobject
+        req.body = { ... req.body, image_url: url, image_name: name}
+
+    }
 
      // Get user id
      const user = req.user; 
@@ -260,7 +272,7 @@ const addExpensesParam = {key: ['vehicle_id', 'expenses']};
  * @param {object} params key_url, key_name, subdocument, key_content_type, subkey
  */
 
-router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddleware({key_url:'url', key_name:'name', subdocument:'expenses',key_content_type:'content_type',subkey:'receipt'}), async (req,res)=> {
+router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddleware(), async (req,res)=> {
 
    /**
     * Destructuration params
@@ -268,8 +280,14 @@ router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddlew
     */
    const {vehicle_id} = req.body; 
 
-    // Check if file uploded
-    const {uploaded} = req;  
+
+    //Get file
+    if(req.uploaded) {
+        
+        const { name, url, type }  = req.fileobject
+        req.body.expenses = { ...req.body.expenses, receipt:[{ url, name, type}]}
+
+    }
 
     const user = req.user;
 
@@ -346,8 +364,8 @@ router.delete('/expenses/delete/:_id',checkRequestKey(delExpensesParam), async (
  * UPDATE expenses
  * @param expenses_id
  */
-const putExpensesParam = {key: ['expenses_id']};
-router.put('/expenses/update',checkRequestKey(putExpensesParam), async(req,res) => {
+const putExpensesParam = {key: ['expenses_id, expenses']};
+router.put('/expenses/update',checkRequestKey(putExpensesParam),fileUploadMiddleware(), async(req,res) => {
 
     /**
     * Destructuration params
@@ -355,6 +373,14 @@ router.put('/expenses/update',checkRequestKey(putExpensesParam), async(req,res) 
     * @param expenses (expenses data to change)
     */
      const {expenses_id, expenses} = req.body
+
+    //Get file
+    if(req.uploaded) {
+        
+        const { name, url, type }  = req.fileobject
+        req.body.expenses = { ...req.body.expenses, receipt:[{ url, name, type}]}
+
+    }
 
      //Get user id 
      const user = req.user

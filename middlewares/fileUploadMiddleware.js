@@ -3,28 +3,14 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 
 /**
- * @Todo 
- * refactro 
- * return only uri
- */
-
-/**
  * Middleware for file  uploads (images or other files)
- * @param {object} options - Configurations for file upload and key 
- * @returns  {function}
+ * @returns uri
  */
 
-const fileUploadMiddleware = (options = {}) => {
+
+const fileUploadMiddleware = () => {
 
     return async (req, res, next) => {
-
-        const defaultOpts = {
-            key_url:'image_url', 
-            key_name:'image_name', 
-            subdocument:null
-        }
-
-        const opts = {...defaultOpts, ...options}
 
         if (req.files) {
             try {
@@ -40,30 +26,9 @@ const fileUploadMiddleware = (options = {}) => {
                     const resultCloudinary = await cloudinary.uploader.upload(filePath);
                     fs.unlinkSync(filePath);
                     const url = resultCloudinary.secure_url;
-
-                    if(opts.subdocument){
-
-                        /**
-                         * @TODO
-                         * refactor
-                         * get object path with parameter
-                         */
-
-                        const fileObject = {
-                            [opts.key_url]: url,
-                            [opts.key_name]: name,
-                            [opts.key_content_type]: type
-                        }
-
-                        req.body[opts.subdocument] = {...req.body[opts.subdocument], [opts.subkey]: { ...(req.body[opts.subdocument]?.[opts.subkey] || {}), ...fileObject }};
-
-                    } else {
-                        
-                        req.body = { ...req.body, [opts.key_url]: url, [opts.key_name]:name}
-
-                    }
-                   
-                    req.uploaded = true;
+                    
+                    req.uploaded = true 
+                    req.fileobject = { url, name, type}
 
                 } else {
 

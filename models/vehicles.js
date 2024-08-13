@@ -19,7 +19,7 @@ const coveragePeriod = mongoose.Schema({
 /* Receipt */
 const receiptSchema = mongoose.Schema({
     name:String,
-    content_type: String, 
+    type: String, 
     url:{type:String, required:[true, 'A file is required']}
 })
 
