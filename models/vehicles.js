@@ -74,8 +74,8 @@ const vehicleSchema = mongoose.Schema({
         ref: 'users',
         required:[true, 'User not found. Unable to add vehicle. Operation aborted.'] 
     }, 
-    licence_plate: String,
-    vin: String, 
+    licence_plate: {type:String,unique:true},
+    vin:{type:String, unique:true}, 
     type:{
         type: String, 
         required: true, 

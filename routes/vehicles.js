@@ -264,13 +264,7 @@ router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam),
  * @params vehicle_id, expenses
  */
 
-const addExpensesParam = {key: ['vehicle_id', 'expenses']};
-
-/**
- * Middleware for file upload
- * 
- * @param {object} params key_url, key_name, subdocument, key_content_type, subkey
- */
+const addExpensesParam = {key: ['vehicle_id', 'expenses[amount]', 'expenses[category]']};
 
 router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddleware(), async (req,res)=> {
 
@@ -285,7 +279,7 @@ router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddlew
     if(req.uploaded) {
         
         const { name, url, type }  = req.fileobject
-        req.body.expenses = { ...req.body.expenses, receipt:[{ url, name, type}]}
+        req.body = { ...req.body, receipt:[{ url, name, type}]}
 
     }
 
@@ -297,7 +291,7 @@ router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddlew
     
                 $push:{
                     expenses:{
-                    ...req.body.expenses
+                    ...req.body
                     }
                 }
 
@@ -313,7 +307,6 @@ router.post('/expenses/add',checkRequestKey(addExpensesParam), fileUploadMiddlew
         res.status(500).json({result:false, error:'An error has occurred'})
 
     }
-
 
 }); 
 
@@ -364,7 +357,7 @@ router.delete('/expenses/delete/:_id',checkRequestKey(delExpensesParam), async (
  * UPDATE expenses
  * @param expenses_id
  */
-const putExpensesParam = {key: ['expenses_id, expenses']};
+const putExpensesParam = {key: ['expenses_id']};
 router.put('/expenses/update',checkRequestKey(putExpensesParam),fileUploadMiddleware(), async(req,res) => {
 
     /**
@@ -378,7 +371,7 @@ router.put('/expenses/update',checkRequestKey(putExpensesParam),fileUploadMiddle
     if(req.uploaded) {
         
         const { name, url, type }  = req.fileobject
-        req.body.expenses = { ...req.body.expenses, receipt:[{ url, name, type}]}
+        req.body = { ...req.body, receipt:[{ url, name, type}]}
 
     }
 
@@ -390,9 +383,8 @@ router.put('/expenses/update',checkRequestKey(putExpensesParam),fileUploadMiddle
         const arrayFilters = [{"elem._id": new ObjectId(expenses_id)}]
         const update = {$set: {}}
         
-
         //Create $set object
-        for (const key in expenses) {
+        for (const key in req.body) {
             update["$set"][`expenses.$[elem].${key}`] = expenses[key]
         }
         
