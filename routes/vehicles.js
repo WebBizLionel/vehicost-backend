@@ -1,13 +1,12 @@
 var express = require('express');
 var router = express.Router(); 
+const moment = require('moment')
 const User = require('../models/users');
 const Vehicle = require('../models/vehicles');
 const { ObjectId } = require('mongoose').Types
 const {  removeKeys } = require('../modules/helpers'); 
-
 const checkRequestKey = require('../middlewares/checRequestKey');
 const fileUploadMiddleware = require('../middlewares/fileUploadMiddleware');
-
 /** 
  * @TODO
  * create translation file for multilinguisme
@@ -185,8 +184,13 @@ router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam),
    /**
     * Create friendly dates
     */
-   let startDate = start_date ? new Date(start_date) : null;
-   let endDate = end_date ? new Date(end_date) : null; 
+
+   /**
+    * let startDate = start_date ? new Date(start_date) : null;
+    * let endDate = end_date ? new Date(end_date) : null; 
+    */
+   let startDate = start_date; 
+   let endDate = end_date;
 
    //Get user id 
    const user = req.user; 
@@ -211,9 +215,8 @@ router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam),
     // Number of days
     if (number_day) {
         const daysAgo = parseInt(number_day, 10);
-        endDate = new Date(); // Date actuelle
-        startDate = new Date();
-        startDate.setDate(endDate.getDate() - daysAgo); // Calcul de la date de début
+        endDate = moment().utc().valueOf(); // Current
+        startDate = moment().utc().substract(number_day, 'days').valueOf(); // Day ago
     }
 
     // Create match with date or day
