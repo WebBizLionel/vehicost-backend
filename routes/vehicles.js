@@ -141,8 +141,8 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 
     }
 
-     // Get user id
-     const user = req.user; 
+    // Get user id
+    const user = req.user; 
 
     try{
 
@@ -168,7 +168,7 @@ router.put('/update',fileUploadMiddleware(),  async (req,res)=>{
 /**
  * GET expense
  * @params vehicle_id, _id?
- * @query start_date, end_date or number_day 
+ * @query start_date, end_date or number_day and category
  */
 const getExpensesParam = {request:'params', key: ['vehicle_id']};
 router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam), async (req, res) =>{
@@ -179,7 +179,7 @@ router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam),
     * @query start_date, end_date
     */
    const {vehicle_id, _id} = req.params; 
-   const {start_date, end_date, number_day} = req.query;
+   const {start_date, end_date, number_day, category} = req.query;
 
    /**
     * Create friendly dates
@@ -197,7 +197,7 @@ router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam),
 
    /**
     * Create pipeline
-    * Conditions : vehicule_id, _id of expenses, dates
+    * Conditions : vehicule_id, _id of expenses, dates, category
     */
 
     const vehMatchConditions = {
@@ -225,6 +225,11 @@ router.get('/expenses/get/:vehicle_id/:_id?', checkRequestKey(getExpensesParam),
             $gte:startDate, 
             $lte:endDate
         }
+    }
+
+    // Create match with category
+    if (category) {
+        expMatchConditions['expenses._id.category'] = category
     }
 
     try {

@@ -103,7 +103,6 @@ router.post('/signup',checkRequestKey(signUpParams), async (req, res) => {
       res.status(500).json({result:false, error:'An error has occurred'})
 
     }
-   
 
 }); 
 
@@ -125,7 +124,7 @@ router.post('/signin',checkRequestKey(signInParams), async (req, res)=> {
 
     } else {
 
-      res.json({ result: false, error: 'Utlisateur non trouvé ou mauvais mot de passe' });
+      res.json({ result: false, error: 'Utlisateur non trouvé ou mauvais mot de passe.' , notification:true});
 
     }
 

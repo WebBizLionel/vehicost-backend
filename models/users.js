@@ -48,7 +48,10 @@ const UserSchema = mongoose.Schema({
         type: String, 
         default: null
     },
-    accept_rgpd: Boolean, 
+    accept_rgpd: {
+        type:String, 
+        required:true
+    }, 
     preferences: preferencesSchema, 
     social_login: snloginSchema, 
 }, {timestamps:true})
