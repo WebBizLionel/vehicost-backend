@@ -93,7 +93,7 @@ router.post('/add', fileUploadMiddleware(), async (req, res) => {
  * Use req.param
  */
 const delParams = {request:'params', key: ['vehicle_id']};
-router.delete('/delete/vehicle_id',checkRequestKey(delParams), async (req,res)=>{
+router.delete('/delete/:vehicle_id',checkRequestKey(delParams), async (req,res)=>{
     
     /**
     * Destructuration params
