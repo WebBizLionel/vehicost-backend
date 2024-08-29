@@ -3,5 +3,5 @@ const bcrypt = require('bcrypt');
 
 
 const registerController =  async (req, res) => {
-
+    
 }
